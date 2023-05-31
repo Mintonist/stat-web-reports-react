@@ -25,7 +25,6 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
       if (target) {
         //--> понять синтаксис квадратных скобок для [target.name] - это налаог образения к полю объекта: obj.name ~ obj["name"]
         setData((prevState) => ({ ...prevState, [target.name]: target.value }));
-        console.log('handleChange', data, target);
       }
     },
     [setData]
@@ -43,10 +42,13 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
 
   const validate = useCallback(
     (data) => {
-      const errors = validator(data, validatorConfig);
-      setErrors(errors);
+      const err = validator(data, validatorConfig);
+      // console.log('errors', err, data, validatorConfig);
+      // console.log('isValid', isValid, Object.keys(err).length);
+      setErrors(err);
+      //console.log('isValid', isValid, Object.keys(err).length);
       // true - если нет ошибок
-      return isValid;
+      return Object.keys(err).length === 0;
     },
     [validatorConfig, setErrors, isValid]
   );
@@ -100,7 +102,6 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
     //--> что делаем если кнопка вложена в вёрстку?
     // пришла кнопка (или div c кнопкой:)
     if (type == 'string') {
-      console.log(type, child);
       if (child.type == 'button') {
         if (child.props.type == 'submit' || child.props.type == undefined) {
           config = { ...child.props, disabled: !isValid };

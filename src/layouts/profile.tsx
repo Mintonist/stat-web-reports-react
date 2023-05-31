@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api';
 import { reportSortConfig } from '../app';
@@ -9,6 +9,13 @@ import userStore from '../store/userStore';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import UserEditForm from '../components/ui/userEditForm';
+import ReportEditForm from '../components/ui/reportEditForm';
+
+enum ModalType {
+  NONE,
+  USER,
+  REPORT,
+}
 
 const Profile = () => {
   const history = useHistory();
@@ -18,13 +25,14 @@ const Profile = () => {
   const [reports, setReports] = useState<IReport[]>(null);
   const [departs, setDeparts] = useState<IDepart[]>(null);
   const [user, setUser] = useState<IUser>(null);
-  const [modalState, setModalState] = useState<boolean>(false);
+  const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
+  const refReportToEdit = useRef<IReport>(null);
 
   const update = () => {
     api.users.getById(userId).then((u: IUser) => {
       if (u) {
         setUser(u);
-        api.reports.fetchAll().then((data: IReport[]) => {
+        api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
           if (!data) data = [];
           else {
             data = data.filter((a) => a.create_user_id == u._id);
@@ -50,12 +58,9 @@ const Profile = () => {
       const dep = departs.filter((d) => d._id == report.depart_id);
       if (dep && dep.length > 0) res.push({ _id: dep[0]._id, title: dep[0].code, color: dep[0].color });
     }
-    if (report.create_user_id == userStore.user._id) res.push({ _id: '0', icon: '/personIcon.svg' });
+    if (!report.is_public && report.create_user_id == userStore.user._id)
+      res.push({ _id: '0', icon: '/personIcon.svg' });
     return res;
-  };
-
-  const handleEdit = () => {
-    setModalState(true);
   };
 
   return (
@@ -79,30 +84,28 @@ const Profile = () => {
             <button
               type="button"
               className="btn me-2 btn-lg btn-secondary align-self-center"
-              onClick={() => handleEdit()}
+              onClick={() => {
+                setModalState(ModalType.USER);
+              }}
             >
               Редактировать
             </button>
           )}
         </div>
       )}
-      {user && modalState && (
+      {user && modalState == ModalType.USER && (
         <ModalDialog
           title="Редактирование пользователя"
-          descr=""
           onClose={() => {
-            setModalState(false);
+            setModalState(ModalType.NONE);
           }}
-          submitButton=""
-          // isSmall
-          onSubmit={() => {}}
         >
           <UserEditForm
             user={user}
             onSubmit={(data) => {
               setUser({ ...user, ...data });
               api.users.update(user._id, { ...data });
-              setModalState(false);
+              setModalState(ModalType.NONE);
             }}
           ></UserEditForm>
         </ModalDialog>
@@ -124,7 +127,14 @@ const Profile = () => {
             onItemSelect={(rep: IReport) => {
               history.push(`/report/${rep._id}`);
             }}
-            onItemEdit={userStore.isAdmin() ? () => {} : null}
+            onItemEdit={
+              userStore.isAdmin()
+                ? (data) => {
+                    refReportToEdit.current = data;
+                    setModalState(ModalType.REPORT);
+                  }
+                : null
+            }
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
@@ -135,6 +145,23 @@ const Profile = () => {
             }
           />
         </>
+      )}
+      {refReportToEdit.current && modalState == ModalType.REPORT && (
+        <ModalDialog
+          title="Редактирование отчёта"
+          onClose={() => {
+            setModalState(ModalType.NONE);
+          }}
+        >
+          <ReportEditForm
+            report={refReportToEdit.current}
+            onSubmit={(data) => {
+              api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              setModalState(ModalType.NONE);
+              update();
+            }}
+          ></ReportEditForm>
+        </ModalDialog>
       )}
     </>
   );

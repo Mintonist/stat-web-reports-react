@@ -33,6 +33,11 @@ export function validator(data, config) {
           return configParam.message;
         break;
 
+      case IS_LOGIN:
+        if (dataParam.trim().length > 0 && dataParam.trim().match(new RegExp('^[A-Za-z]+[0-9A-Za-z_]+$')) == null)
+          return configParam.message;
+        break;
+
       default:
         break;
     }
@@ -68,4 +73,5 @@ export const HAS_SPECIAL_CHARACTER: string = 'SPECIAL_CHARACTERS';
 export const HAS_CAPITAL_SYMBOL: string = 'HAS_CAPITAL_SYMBOL';
 export const HAS_DIGIT: string = 'HAS_DIGIT';
 export const IS_EMAIL: string = 'IS_EMAIL';
+export const IS_LOGIN: string = 'IS_LOGIN';
 export const IS_SET_TRUE: string = 'IS_SET_TRUE';

@@ -4,7 +4,7 @@ interface TFProps {
   label?: string;
   value?: string;
   name: string;
-  defaultOption?: string;
+  //defaultOption?: string;
   options: any;
   error?: string;
   onChange?: any;
@@ -15,7 +15,7 @@ const RadioField = ({
   label = null,
   value = '',
   name,
-  defaultOption = '',
+  // defaultOption = '',
   options,
   error = null,
   onChange = null,
@@ -29,6 +29,7 @@ const RadioField = ({
   }
 
   const handleChange = ({ target }) => {
+    console.log('RadioField.handleChange():', target.name, target.value);
     onChange({ name: target.name, value: target.value });
   };
 

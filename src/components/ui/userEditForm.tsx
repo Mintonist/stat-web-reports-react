@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import FormComponent, { TextField, SelectField } from '../common/form';
 
 import { IUser } from '../../models';
 
-import { IS_REQUIRED, IS_EMAIL, MIN_MAX_LEGTH } from '../../utils/validator';
+import { IS_REQUIRED, IS_EMAIL, MIN_MAX_LEGTH, IS_LOGIN } from '../../utils/validator';
 
 interface UserProps {
   user?: IUser;
@@ -44,6 +44,7 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
     },
     login: {
       [IS_REQUIRED]: { message: 'Логин не заполнен' },
+      [IS_LOGIN]: { message: 'Логин может содержать недопустимые символы' },
       [MIN_MAX_LEGTH]: { min: 5, message: 'Слишком короткий логин' },
     },
     password: {
@@ -67,6 +68,7 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
   // };
 
   const handleSubmit = (data) => {
+    console.log('UserEditForm.handleSubmit()', data);
     // e.preventDefault();
 
     // validate();
@@ -98,7 +100,7 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
 
   return (
     <div className="m-3">
-      <FormComponent onSubmit={handleSubmit} validatorConfig={validatorConfig}>
+      <FormComponent onSubmit={handleSubmit} validatorConfig={validatorConfig} defaultData={data}>
         <TextField
           label="Логин"
           type="login"
@@ -134,9 +136,9 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
           name="role"
           //value={data.role}
           options={[
-            { name: 'admin', _id: '1' },
-            { name: 'editor', _id: '2' },
-            { name: 'viewer', _id: '3' },
+            { name: 'admin', _id: 'admin' },
+            { name: 'editor', _id: 'editor' },
+            { name: 'viewer', _id: 'viewer' },
           ]}
           defaultOption="Выбор..."
           // error={errors['role']}

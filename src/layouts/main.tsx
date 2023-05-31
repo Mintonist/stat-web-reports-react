@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IDepart, IReport } from '../models';
 import api from '../api/index.js';
 import ItemsList from '../components/ui/itemsList';
@@ -8,16 +8,25 @@ import { BadgeList } from '../components/ui/badges';
 import { IBadge } from '../components/ui/badges/badge';
 import { useHistory } from 'react-router-dom';
 import { reportSortConfig } from '../app';
+import ModalDialog from '../components/common/ModalDialog';
+import ReportEditForm from '../components/ui/reportEditForm';
+
+enum ModalType {
+  NONE,
+  REPORT,
+}
 
 const Main = () => {
   const history = useHistory();
   const [reports, setReports] = useState<IReport[]>(null);
   const [departs, setDeparts] = useState<IDepart[]>(null);
+  const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
+  const refReportToEdit = useRef<IReport>(null);
 
   const update = () => {
-    api.reports.fetchAll().then((data: IReport[]) => {
+    api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
       if (!data) setReports([]);
-      data = data.filter((a) => !a.depart_id);
+      data = data.filter((a) => !a.depart_id || a.depart_id == '0');
       data.sort((a, b) => a.name.localeCompare(b.name));
       setReports(data);
     });
@@ -34,7 +43,8 @@ const Main = () => {
       const dep = departs.filter((d) => d._id == report.depart_id);
       if (dep && dep.length > 0) res.push({ _id: dep[0]._id, title: dep[0].code, color: dep[0].color });
     }
-    if (report.create_user_id == userStore.user._id) res.push({ _id: '0', icon: '/personIcon.svg' });
+    if (!report.is_public && report.create_user_id == userStore.user._id)
+      res.push({ _id: '0', icon: '/personIcon.svg' });
     return res;
   };
 
@@ -83,7 +93,14 @@ const Main = () => {
             onItemSelect={(rep: IReport) => {
               history.push(`/report/${rep._id}`);
             }}
-            onItemEdit={userStore.isAdmin() ? () => {} : null}
+            onItemEdit={
+              userStore.isAdmin()
+                ? (data) => {
+                    refReportToEdit.current = data;
+                    setModalState(ModalType.REPORT);
+                  }
+                : null
+            }
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
@@ -94,6 +111,23 @@ const Main = () => {
             }
           />
         </>
+      )}
+      {refReportToEdit.current && modalState == ModalType.REPORT && (
+        <ModalDialog
+          title="Редактирование отчёта"
+          onClose={() => {
+            setModalState(ModalType.NONE);
+          }}
+        >
+          <ReportEditForm
+            report={refReportToEdit.current}
+            onSubmit={(data) => {
+              api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              setModalState(ModalType.NONE);
+              update();
+            }}
+          ></ReportEditForm>
+        </ModalDialog>
       )}
     </>
   );

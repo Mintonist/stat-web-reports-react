@@ -24,5 +24,5 @@ class UserStore {
     return this.user && this.user.role == 'admin';
   }
 }
-
-export default new UserStore();
+const user = new UserStore();
+export default user;

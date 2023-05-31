@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+//import { useHistory } from 'react-router-dom';
 import TextField from '../common/form/textField';
 import api from '../../api/index.js';
 
@@ -9,7 +9,7 @@ import { IUser } from '../../models';
 import userStore from '../../store/userStore';
 
 const LoginForm = () => {
-  const history = useHistory();
+  // const history = useHistory();
   // const [data, setData] = useState({ login: '', password: '', stayOn: false });
   // const [errors, setErrors] = useState({});
   // let [submitAmount, setSubmitAmount] = useState(0);
@@ -49,6 +49,7 @@ const LoginForm = () => {
   // };
 
   const handleSubmit = (data) => {
+    console.log('LoginForm.handleSubmit()', data);
     // e.preventDefault();
 
     // validate();

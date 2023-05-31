@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { IDepart } from '../models';
 import api from '../api/index.js';
 import ItemsList from '../components/ui/itemsList';
 import userStore from '../store/userStore';
 import { useHistory } from 'react-router-dom';
+import ModalDialog from '../components/common/ModalDialog';
+import DepartEditForm from '../components/ui/departEditForm';
+
+enum ModalType {
+  NONE,
+  CREATE,
+  EDIT,
+}
 
 const Departs = () => {
   const history = useHistory();
   const [departs, setDeparts] = useState<IDepart[]>(null);
+  const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
+  const refDepartToEdit = useRef<IDepart>(null);
 
   const update = () => {
     api.departs.fetchAll().then((data: IDepart[]) => {
@@ -31,9 +41,34 @@ const Departs = () => {
           <p>Здесь Вы можете создавать/удалять/редактировать отделы</p>
         </div>
         {userStore.isAdmin() && (
-          <button type="button" className="btn me-2 btn-lg btn-secondary align-self-center">
-            Создать отдел
-          </button>
+          <>
+            <button
+              type="button"
+              className="btn me-2 btn-lg btn-secondary align-self-center"
+              onClick={() => {
+                setModalState(ModalType.CREATE);
+              }}
+            >
+              Создать отдел
+            </button>
+            {modalState == ModalType.CREATE && (
+              <ModalDialog
+                title="Создание отдела"
+                onClose={() => {
+                  setModalState(ModalType.NONE);
+                }}
+              >
+                <DepartEditForm
+                  depart={null}
+                  onSubmit={(data) => {
+                    api.departs.add({ ...data });
+                    update();
+                    setModalState(ModalType.NONE);
+                  }}
+                ></DepartEditForm>
+              </ModalDialog>
+            )}
+          </>
         )}
       </div>
       <hr className="hr" />
@@ -46,7 +81,14 @@ const Departs = () => {
             onItemSelect={(dep: IDepart) => {
               history.push(`/depart/${dep._id}`);
             }}
-            onItemEdit={userStore.isAdmin() ? () => {} : null}
+            onItemEdit={
+              userStore.isAdmin()
+                ? (item) => {
+                    refDepartToEdit.current = item;
+                    setModalState(ModalType.EDIT);
+                  }
+                : null
+            }
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
@@ -57,6 +99,26 @@ const Departs = () => {
             }
           />
         </>
+      )}
+      {modalState == ModalType.EDIT && (
+        <ModalDialog
+          title="Редактирование отдела"
+          onClose={() => {
+            setModalState(ModalType.NONE);
+          }}
+        >
+          <DepartEditForm
+            depart={refDepartToEdit.current}
+            onSubmit={(data) => {
+              //setUser({ ...user, ...data });
+              console.log(data);
+              api.departs.update(refDepartToEdit.current._id, { ...data });
+              refDepartToEdit.current = null;
+              setModalState(ModalType.NONE);
+              update();
+            }}
+          ></DepartEditForm>
+        </ModalDialog>
       )}
     </>
   );

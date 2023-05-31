@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import internal from 'stream';
 
 interface TFProps {
   label?: string;
@@ -11,6 +12,7 @@ interface TFProps {
   onChange?: any;
   onKeyDown?: any;
   autoFocus?: boolean;
+  mb?: number;
 }
 
 const TextField = ({
@@ -24,6 +26,7 @@ const TextField = ({
   onChange = null,
   onKeyDown = null,
   autoFocus = false,
+  mb = 3,
 }: TFProps) => {
   const [showPassord, setShowPassword] = useState(false);
 
@@ -36,7 +39,7 @@ const TextField = ({
   };
 
   return (
-    <div className="mb-3">
+    <div className={'mb-' + mb}>
       {label && (
         <label className="" htmlFor={name}>
           {label}

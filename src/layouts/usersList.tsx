@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { IUser } from '../models';
 import api from '../api/index.js';
@@ -21,10 +21,17 @@ const filterConfig: IFilterConfig = {
   value: '',
 };
 
+enum ModalType {
+  NONE,
+  CREATE,
+  EDIT,
+}
+
 const Users = () => {
   const history = useHistory();
   const [users, setUsers] = useState<IUser[]>(null);
-  const [modalState, setModalState] = useState<boolean>(false);
+  const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
+  const refUserToEdit = useRef<IUser>(null);
 
   const update = () => {
     api.users.fetchAll().then((data: IUser[]) => {
@@ -65,27 +72,25 @@ const Users = () => {
             <button
               type="button"
               className="btn me-2 btn-lg btn-secondary align-self-center"
-              onClick={() => setModalState(true)}
+              onClick={() => {
+                setModalState(ModalType.CREATE);
+              }}
             >
               Создать пользователя
             </button>
-            {modalState && (
+            {modalState == ModalType.CREATE && (
               <ModalDialog
                 title="Создание пользователя"
-                descr=""
                 onClose={() => {
-                  setModalState(false);
+                  setModalState(ModalType.NONE);
                 }}
-                submitButton=""
-                // isSmall
-                onSubmit={() => {}}
               >
                 <UserEditForm
                   user={null}
                   onSubmit={(data) => {
                     const newUser = api.users.add({ ...data });
                     update();
-                    setModalState(false);
+                    setModalState(ModalType.NONE);
                   }}
                 ></UserEditForm>
               </ModalDialog>
@@ -105,7 +110,14 @@ const Users = () => {
             onItemSelect={(u: IUser) => {
               history.push(`/profile/${u._id}`);
             }}
-            onItemEdit={userStore.isAdmin() ? () => {} : null}
+            onItemEdit={
+              userStore.isAdmin()
+                ? (item) => {
+                    refUserToEdit.current = item;
+                    setModalState(ModalType.EDIT);
+                  }
+                : null
+            }
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
@@ -116,6 +128,26 @@ const Users = () => {
             }
           />
         </>
+      )}
+      {modalState == ModalType.EDIT && (
+        <ModalDialog
+          title="Редактирование пользователя"
+          onClose={() => {
+            setModalState(ModalType.NONE);
+          }}
+        >
+          <UserEditForm
+            user={refUserToEdit.current}
+            onSubmit={(data) => {
+              //setUser({ ...user, ...data });
+              console.log(data);
+              api.users.update(refUserToEdit.current._id, { ...data });
+              refUserToEdit.current = null;
+              setModalState(ModalType.NONE);
+              update();
+            }}
+          ></UserEditForm>
+        </ModalDialog>
       )}
     </>
   );

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Grid, Input, Select } from 'react-spreadsheet-grid';
+import React from 'react';
+import { Grid, Input } from 'react-spreadsheet-grid';
 import ExcelBar from '../components/ui/excelBar';
 
 const rows = [

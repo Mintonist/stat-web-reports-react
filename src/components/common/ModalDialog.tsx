@@ -2,15 +2,23 @@ import React from 'react';
 
 interface ModalPropflex {
   title: string;
-  descr: string;
+  descr?: string;
   isSmall?: boolean;
   children: React.ReactNode;
   onClose: any;
-  submitButton: string;
-  onSubmit: any;
+  submitButton?: string;
+  onSubmit?: any;
 }
 
-const ModalDialog = ({ title, descr, children, onClose, submitButton, onSubmit, isSmall = false }: ModalPropflex) => {
+const ModalDialog = ({
+  title,
+  descr = '',
+  children,
+  onClose,
+  submitButton = '',
+  onSubmit = null,
+  isSmall = false,
+}: ModalPropflex) => {
   return (
     <div
       className="modal show text-start"
@@ -30,7 +38,7 @@ const ModalDialog = ({ title, descr, children, onClose, submitButton, onSubmit, 
             </div>
             <button
               type="button"
-              className="btn-close align-self-start"
+              className="btn-close"
               onClick={(e: React.MouseEvent) => {
                 onClose();
               }}

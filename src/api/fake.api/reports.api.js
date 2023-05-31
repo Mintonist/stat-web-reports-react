@@ -110,10 +110,12 @@ const getById = (id) =>
     }, 500);
   });
 
-const fetchAll = () =>
+const fetchAll = (userId) =>
   new Promise((resolve) => {
     window.setTimeout(function () {
-      resolve(JSON.parse(localStorage.getItem('reports')));
+      resolve(
+        JSON.parse(localStorage.getItem('reports')).filter((obj) => obj.create_user_id === userId || obj.is_public)
+      );
     }, 500);
   });
 

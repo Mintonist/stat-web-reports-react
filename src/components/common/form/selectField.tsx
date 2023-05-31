@@ -27,12 +27,17 @@ const SelectField = ({
   }
 
   const handleChange = ({ target }) => {
-    onChange({ name: target.name, value: target.value });
+    console.log('SelectField.handleChange():', target.name, target.value);
+    onChange({
+      name: target.name,
+      value: target.value,
+      //value: target.options[target.options.selectedIndex].text
+    });
   };
 
   return (
     <div className="mb-3">
-      <label htmlFor={name} className="form-label">
+      <label htmlFor={name} className="form-label m-0">
         {label}
       </label>
       <select

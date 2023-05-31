@@ -73,7 +73,13 @@ const ItemsList = ({
     <>
       <div className="d-flex justify-content-between mx-2 my-0">
         <div className="w-25">
-          <TextField placeholder="Поиск..." name="search" value={searchString} onChange={handleSearchStringChange} />
+          <TextField
+            placeholder="Поиск..."
+            name="search"
+            mb={0}
+            value={searchString}
+            onChange={handleSearchStringChange}
+          />
         </div>
         <div>
           {filterConfig && (
