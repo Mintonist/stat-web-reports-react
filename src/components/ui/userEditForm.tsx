@@ -12,7 +12,7 @@ interface UserProps {
 }
 const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
   //console.log('UserEditForm');
-  const [data, setData] = useState({
+  const [data] = useState({
     name: user ? user.name : '',
     email: user ? user.email : '',
     login: user ? user.login : '',
@@ -69,33 +69,9 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
 
   const handleSubmit = (data) => {
     console.log('UserEditForm.handleSubmit()', data);
-    // e.preventDefault();
-
-    // validate();
-    // // если есть ошибки валидации
-    // if (!validate()) return;
-
-    // setSubmitAmount(0);
 
     // сохраняем
     onSubmit(data);
-    // if (user) {
-    //   api.users.update(user._id, {
-    //     name: data.name,
-    //     email: data.email,
-    //     role: data.role,
-    //     login: data.login,
-    //     password: data.password,
-    //   });
-    // } else {
-    //   api.users.add({
-    //     name: data.name,
-    //     email: data.email,
-    //     role: data.role,
-    //     login: data.login,
-    //     password: data.password,
-    //   });
-    // }
   };
 
   return (

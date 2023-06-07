@@ -11,6 +11,8 @@ import Badge from '../components/ui/badges/badge';
 import DepartEditForm from '../components/ui/departEditForm';
 import ModalDialog from '../components/common/ModalDialog';
 import ReportEditForm from '../components/ui/reportEditForm';
+import { useReports } from '../hooks/useReports';
+import { useDeparts } from '../hooks/useDeparts';
 
 enum ModalType {
   NONE,
@@ -22,28 +24,34 @@ const Depart = () => {
   const history = useHistory();
   let { id: departId } = useParams();
 
-  const [reports, setReports] = useState<IReport[]>(null);
-  const [depart, setDepart] = useState<IDepart>(null);
+  const { filterReports, updateReport, deleteReport } = useReports();
+  const reports = filterReports(userStore.user._id, true, departId);
+  // const [reports, setReports] = useState<IReport[]>(null);
+
+  const { getDepart, updateDepart } = useDeparts();
+  const depart = getDepart(departId);
+  // const [depart, setDepart] = useState<IDepart>(null);
+
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refReportToEdit = useRef<IReport>(null);
 
-  const update = () => {
-    api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
-      if (!data) data = [];
-      else {
-        data = data.filter((a) => a.depart_id == departId);
-        data.sort((a, b) => a.name.localeCompare(b.name));
-      }
-      setReports(data);
-    });
-    api.departs.getById(departId).then((dep: IDepart) => {
-      console.dir(dep);
-      setDepart(dep);
-    });
-  };
-  useEffect(() => {
-    update();
-  }, []);
+  // const update = () => {
+  //   api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
+  //     if (!data) data = [];
+  //     else {
+  //       data = data.filter((a) => a.depart_id == departId);
+  //       data.sort((a, b) => a.name.localeCompare(b.name));
+  //     }
+  //     setReports(data);
+  //   });
+  //   api.departs.getById(departId).then((dep: IDepart) => {
+  //     // console.dir(dep);
+  //     setDepart(dep);
+  //   });
+  // };
+  // useEffect(() => {
+  //   update();
+  // }, []);
 
   const getBadges = (report: IReport) => {
     const res = [];
@@ -87,8 +95,9 @@ const Depart = () => {
           <DepartEditForm
             depart={depart}
             onSubmit={(data) => {
-              setDepart({ ...depart, ...data });
-              api.departs.update(depart._id, { ...data });
+              updateDepart(depart._id, { ...data });
+              //setDepart({ ...depart, ...data });
+              // api.departs.update(depart._id, { ...data });
 
               setModalState(ModalType.NONE);
               //update();
@@ -124,8 +133,9 @@ const Depart = () => {
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
-                    api.reports.remove(item._id);
-                    update();
+                    deleteReport(item._id);
+                    //api.reports.remove(item._id);
+                    // update();
                   }
                 : null
             }
@@ -142,9 +152,10 @@ const Depart = () => {
           <ReportEditForm
             report={refReportToEdit.current}
             onSubmit={(data) => {
-              api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              updateReport(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              // api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
               setModalState(ModalType.NONE);
-              update();
+              // update();
             }}
           ></ReportEditForm>
         </ModalDialog>

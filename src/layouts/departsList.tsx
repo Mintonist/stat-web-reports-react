@@ -7,6 +7,7 @@ import userStore from '../store/userStore';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import DepartEditForm from '../components/ui/departEditForm';
+import { useDeparts } from '../hooks/useDeparts';
 
 enum ModalType {
   NONE,
@@ -16,21 +17,23 @@ enum ModalType {
 
 const Departs = () => {
   const history = useHistory();
-  const [departs, setDeparts] = useState<IDepart[]>(null);
+
+  const { departs, addDepart, deleteDepart, updateDepart } = useDeparts();
+  // const [departs, setDeparts] = useState<IDepart[]>(null);
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refDepartToEdit = useRef<IDepart>(null);
 
-  const update = () => {
-    api.departs.fetchAll().then((data: IDepart[]) => {
-      if (!data) setDeparts([]);
-      data.sort((a, b) => a.code.localeCompare(b.code));
-      setDeparts(data);
-    });
-  };
+  // const update = () => {
+  //   api.departs.fetchAll().then((data: IDepart[]) => {
+  //     if (!data) setDeparts([]);
+  //     data.sort((a, b) => a.code.localeCompare(b.code));
+  //     setDeparts(data);
+  //   });
+  // };
 
-  useEffect(() => {
-    update();
-  }, []);
+  // useEffect(() => {
+  //   update();
+  // }, []);
 
   return (
     <>
@@ -61,8 +64,9 @@ const Departs = () => {
                 <DepartEditForm
                   depart={null}
                   onSubmit={(data) => {
-                    api.departs.add({ ...data });
-                    update();
+                    addDepart({ ...data });
+                    // api.departs.add({ ...data });
+                    // update();
                     setModalState(ModalType.NONE);
                   }}
                 ></DepartEditForm>
@@ -92,8 +96,9 @@ const Departs = () => {
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
-                    api.departs.remove(item._id);
-                    update();
+                    deleteDepart(item._id);
+                    // api.departs.remove(item._id);
+                    //update();
                   }
                 : null
             }
@@ -110,12 +115,11 @@ const Departs = () => {
           <DepartEditForm
             depart={refDepartToEdit.current}
             onSubmit={(data) => {
-              //setUser({ ...user, ...data });
-              console.log(data);
-              api.departs.update(refDepartToEdit.current._id, { ...data });
+              updateDepart(refDepartToEdit.current._id, { ...data });
+              // api.departs.update(refDepartToEdit.current._id, { ...data });
               refDepartToEdit.current = null;
               setModalState(ModalType.NONE);
-              update();
+              // update();
             }}
           ></DepartEditForm>
         </ModalDialog>

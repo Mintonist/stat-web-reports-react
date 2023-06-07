@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { IUser } from '../models';
-import api from '../api/index.js';
 import ItemsList from '../components/ui/itemsList';
 import userStore from '../store/userStore';
 import { IFilterConfig } from '../utils/sorter';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import UserEditForm from '../components/ui/userEditForm';
+import { useUsers } from '../hooks/useUsers';
 
 const filterConfig: IFilterConfig = {
   label: 'Роль',
@@ -29,21 +29,22 @@ enum ModalType {
 
 const Users = () => {
   const history = useHistory();
-  const [users, setUsers] = useState<IUser[]>(null);
+  const { users, addUser, updateUser, deleteUser } = useUsers();
+  // const [users, setUsers] = useState<IUser[]>(null);
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refUserToEdit = useRef<IUser>(null);
 
-  const update = () => {
-    api.users.fetchAll().then((data: IUser[]) => {
-      if (!data) setUsers([]);
-      data.sort((a, b) => a.name.localeCompare(b.name));
-      setUsers(data);
-    });
-  };
+  // const update = () => {
+  //   api.users.fetchAll().then((data: IUser[]) => {
+  //     if (!data) setUsers([]);
+  //     data.sort((a, b) => a.name.localeCompare(b.name));
+  //     setUsers(data);
+  //   });
+  // };
 
-  useEffect(() => {
-    update();
-  }, []);
+  // useEffect(() => {
+  //   update();
+  // }, []);
 
   const getBadges = (user: IUser) => {
     return [
@@ -88,8 +89,9 @@ const Users = () => {
                 <UserEditForm
                   user={null}
                   onSubmit={(data) => {
-                    const newUser = api.users.add({ ...data });
-                    update();
+                    addUser({ ...data });
+                    //api.users.add({ ...data });
+                    //update();
                     setModalState(ModalType.NONE);
                   }}
                 ></UserEditForm>
@@ -121,8 +123,9 @@ const Users = () => {
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
-                    api.users.remove(item._id);
-                    update();
+                    deleteUser(item._id);
+                    //api.users.remove(item._id);
+                    //update();
                   }
                 : null
             }
@@ -141,10 +144,11 @@ const Users = () => {
             onSubmit={(data) => {
               //setUser({ ...user, ...data });
               console.log(data);
-              api.users.update(refUserToEdit.current._id, { ...data });
+              updateUser(refUserToEdit.current._id, { ...data });
+              // api.users.update(refUserToEdit.current._id, { ...data });
               refUserToEdit.current = null;
               setModalState(ModalType.NONE);
-              update();
+              //update();
             }}
           ></UserEditForm>
         </ModalDialog>

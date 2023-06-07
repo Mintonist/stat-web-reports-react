@@ -11,7 +11,7 @@ interface UserProps {
   onSubmit: any;
 }
 const DepartEditForm = ({ depart = null, onSubmit }: UserProps) => {
-  const [data, setData] = useState({
+  const [data] = useState({
     name: depart ? depart.name : '',
     code: depart ? depart.code : '',
     color: depart ? depart.color : '',

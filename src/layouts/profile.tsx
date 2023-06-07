@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../api';
 import { reportSortConfig } from '../app';
 import ItemsList from '../components/ui/itemsList';
 import LoadingAnim from '../components/ui/loadingAnim';
-import { IDepart, IReport, IUser } from '../models';
+import { IReport } from '../models';
 import userStore from '../store/userStore';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import UserEditForm from '../components/ui/userEditForm';
 import ReportEditForm from '../components/ui/reportEditForm';
+import { useReports } from '../hooks/useReports';
+import { useDeparts } from '../hooks/useDeparts';
+import { useUsers } from '../hooks/useUsers';
 
 enum ModalType {
   NONE,
@@ -22,35 +24,44 @@ const Profile = () => {
   let { id: userId } = useParams();
   if (!userId) userId = userStore.user._id;
 
-  const [reports, setReports] = useState<IReport[]>(null);
-  const [departs, setDeparts] = useState<IDepart[]>(null);
-  const [user, setUser] = useState<IUser>(null);
+  // const [user, setUser] = useState<IUser>(null);
+  const { getUser, updateUser } = useUsers();
+  const user = getUser(userId);
+
+  // const [reports, setReports] = useState<IReport[]>(null);
+  const { filterReports, deleteReport, updateReport } = useReports();
+  const reports = filterReports(userId, false);
+
+  // const [departs, setDeparts] = useState<IDepart[]>(null);
+  const { departs } = useDeparts();
+
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refReportToEdit = useRef<IReport>(null);
 
-  const update = () => {
-    api.users.getById(userId).then((u: IUser) => {
-      if (u) {
-        setUser(u);
-        api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
-          if (!data) data = [];
-          else {
-            data = data.filter((a) => a.create_user_id == u._id);
-            data.sort((a, b) => a.name.localeCompare(b.name));
-          }
-          setReports(data);
-        });
-      }
-    });
-    api.departs.fetchAll().then((data: IDepart[]) => {
-      if (!data) data = [];
-      data.sort((a, b) => a.code.localeCompare(b.code));
-      setDeparts(data);
-    });
-  };
-  useEffect(() => {
-    update();
-  }, []);
+  // const update = () => {
+  //   api.users.getById(userId).then((u: IUser) => {
+  //     console.log('user', u);
+  //     if (u) {
+  //       setUser(u);
+  //       api.reports.fetchAll(userStore.user ? userStore.user._id : 0).then((data: IReport[]) => {
+  //         if (!data) data = [];
+  //         else { .filter((obj) => obj.create_user_id === userId || obj.is_public)
+  //           data = data.filter((a) => a.create_user_id == u._id);
+  //           data.sort((a, b) => a.name.localeCompare(b.name));
+  //         }
+  //         setReports(data);
+  //       });
+  //     }
+  //   });
+  //   api.departs.fetchAll().then((data: IDepart[]) => {
+  //     if (!data) data = [];
+  //     data.sort((a, b) => a.code.localeCompare(b.code));
+  //     setDeparts(data);
+  //   });
+  // };
+  // useEffect(() => {
+  //   update();
+  // }, []);
 
   const getBadges = (report: IReport) => {
     const res = [];
@@ -102,9 +113,10 @@ const Profile = () => {
         >
           <UserEditForm
             user={user}
-            onSubmit={(data) => {
-              setUser({ ...user, ...data });
-              api.users.update(user._id, { ...data });
+            onSubmit={async (data) => {
+              //setUser({ ...user, ...data });
+              //api.users.update(user._id, { ...data });
+              await updateUser(userId, data);
               setModalState(ModalType.NONE);
             }}
           ></UserEditForm>
@@ -138,8 +150,9 @@ const Profile = () => {
             onItemRemove={
               userStore.isAdmin()
                 ? (item) => {
-                    api.reports.remove(item._id);
-                    update();
+                    deleteReport(item._id);
+                    // api.reports.remove(item._id);
+                    // update();
                   }
                 : null
             }
@@ -156,9 +169,10 @@ const Profile = () => {
           <ReportEditForm
             report={refReportToEdit.current}
             onSubmit={(data) => {
-              api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              updateReport(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              //api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
               setModalState(ModalType.NONE);
-              update();
+              //update();
             }}
           ></ReportEditForm>
         </ModalDialog>

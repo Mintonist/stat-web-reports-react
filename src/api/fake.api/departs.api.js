@@ -57,6 +57,9 @@ if (!localStorage.getItem('departs')) {
   localStorage.setItem('departs', JSON.stringify(departs));
 }
 
+let count1 = 0,
+  count2 = 0;
+
 const update = (id, data) =>
   new Promise((resolve) => {
     const departs = JSON.parse(localStorage.getItem('departs'));
@@ -69,14 +72,13 @@ const update = (id, data) =>
 const add = (data) =>
   new Promise((resolve) => {
     const departs = JSON.parse(localStorage.getItem('departs'));
-    departs.push({ ...data, _id: Math.ceil(Math.random() * 1000) });
+    departs.push({ ...data, _id: String(Math.ceil(Math.random() * 1000)) });
     localStorage.setItem('departs', JSON.stringify(departs));
     resolve(departs[departs.length - 1]);
   });
 
 const remove = (id) =>
   new Promise((resolve) => {
-    console.log('api.departs.remove', id);
     let departs = JSON.parse(localStorage.getItem('departs'));
     departs = departs.filter((obj) => obj._id != id);
     localStorage.setItem('departs', JSON.stringify(departs));
@@ -86,6 +88,7 @@ const remove = (id) =>
 const getById = (id) =>
   new Promise((resolve) => {
     window.setTimeout(function () {
+      console.log('departs.api.getById', ++count1);
       resolve(JSON.parse(localStorage.getItem('departs')).find((obj) => obj._id === id));
     }, 1000);
   });
@@ -93,6 +96,7 @@ const getById = (id) =>
 const fetchAll = () =>
   new Promise((resolve) => {
     window.setTimeout(function () {
+      console.log('departs.api.fetchAll', ++count2);
       resolve(JSON.parse(localStorage.getItem('departs')));
     }, 1000);
   });

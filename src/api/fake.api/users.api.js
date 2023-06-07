@@ -35,9 +35,13 @@ if (!localStorage.getItem('users')) {
   localStorage.setItem('users', JSON.stringify(users));
 }
 
+let count1 = 0,
+  count2 = 0;
+
 const fetchAll = () =>
   new Promise((resolve) => {
     window.setTimeout(function () {
+      console.log('user.api.fetchAll', ++count1);
       resolve(JSON.parse(localStorage.getItem('users')));
     }, 600);
   });
@@ -54,7 +58,7 @@ const update = (id, data) =>
 const add = (data) =>
   new Promise((resolve) => {
     const users = JSON.parse(localStorage.getItem('users'));
-    users.push({ ...data, _id: Math.ceil(Math.random() * 1000) });
+    users.push({ ...data, _id: String(Math.ceil(Math.random() * 1000)) });
     localStorage.setItem('users', JSON.stringify(users));
     resolve(users[users.length - 1]);
   });
@@ -70,6 +74,7 @@ const remove = (id) =>
 const getById = (id) =>
   new Promise((resolve) => {
     window.setTimeout(function () {
+      console.log('user.api.getById', ++count2);
       resolve(JSON.parse(localStorage.getItem('users')).find((obj) => obj._id === id));
     }, 500);
   });

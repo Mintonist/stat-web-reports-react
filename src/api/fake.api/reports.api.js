@@ -78,6 +78,9 @@ if (!localStorage.getItem('reports')) {
   localStorage.setItem('reports', JSON.stringify(reports));
 }
 
+let count1 = 0,
+  count2 = 0;
+
 const update = (id, data) =>
   new Promise((resolve) => {
     const reports = JSON.parse(localStorage.getItem('reports'));
@@ -90,7 +93,7 @@ const update = (id, data) =>
 const add = (data) =>
   new Promise((resolve) => {
     const reports = JSON.parse(localStorage.getItem('reports'));
-    reports.push({ ...data, _id: Math.ceil(Math.random() * 1000) });
+    reports.push({ ...data, _id: String(Math.ceil(Math.random() * 1000)) });
     localStorage.setItem('reports', JSON.stringify(reports));
     resolve(reports[reports.length - 1]);
   });
@@ -105,16 +108,18 @@ const remove = (id) =>
 
 const getById = (id) =>
   new Promise((resolve) => {
+    console.log('reports.api.getById', ++count1);
     window.setTimeout(function () {
       resolve(JSON.parse(localStorage.getItem('reports')).find((obj) => obj._id === id));
     }, 500);
   });
 
-const fetchAll = (userId) =>
+const fetchAll = () =>
   new Promise((resolve) => {
+    console.log('reports.api.fetchAll', ++count2);
     window.setTimeout(function () {
       resolve(
-        JSON.parse(localStorage.getItem('reports')).filter((obj) => obj.create_user_id === userId || obj.is_public)
+        JSON.parse(localStorage.getItem('reports')) //.filter((obj) => obj.create_user_id === userId || obj.is_public)
       );
     }, 500);
   });

@@ -14,6 +14,12 @@ import { IUser } from './models';
 import userStore from './store/userStore';
 import { ISortConfig } from './utils/sorter';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { UsersProvider } from './hooks/useUsers';
+import { DepartsProvider } from './hooks/useDeparts';
+import { ReportsProvider } from './hooks/useReports';
+
 export const reportSortConfig: ISortConfig[] = [
   { label: 'По алфавиту', asc: true, sortProperty: 'name' },
   { label: 'По рейтингу', asc: false, sortProperty: 'rate' },
@@ -68,18 +74,35 @@ const App = () => {
         <Route path="/users/:userId?/edit" component={Users} />
         <Route path="/users/:userId?" component={Users} />
         <Route path="/users/:userId" component={UserInfo} /> */}
+          <UsersProvider>
+            <DepartsProvider>
+              <ReportsProvider>
+                <Route exact path="/report/:id?" component={Report} />
+                <NavRoute exact path="/users" component={Users} />
+                <NavRoute exact path="/profile/:id?" component={Profile} />
+                <NavRoute exact path="/departs" component={Departs} />
+                <NavRoute exact path="/depart/:id?" component={Depart} />
+                <NavRoute exact path="/main" component={Main} />
+                <NavRoute exact path="/404" component={NotFound} />
+                <Redirect exact from="/" to="/main" />
+              </ReportsProvider>
+            </DepartsProvider>
+          </UsersProvider>
 
-          <Route exact path="/report/:id?" component={Report} />
-          <NavRoute exact path="/users" component={Users} />
-          <NavRoute exact path="/profile/:id?" component={Profile} />
-          <NavRoute exact path="/departs" component={Departs} />
-          <NavRoute exact path="/depart/:id?" component={Depart} />
-          <NavRoute exact path="/main" component={Main} />
-          <NavRoute exact path="/404" component={NotFound} />
-          <Redirect exact from="/" to="/main" />
           <Redirect to="/404" />
         </Switch>
       )}
+      {/* <button
+        className="btn"
+        onClick={() => {
+          const data = null;
+          console.log(data.info);
+        }}
+      >
+        Break the world
+      </button> */}
+
+      <ToastContainer autoClose={false} closeButton={true} position={'top-center'} />
     </>
   );
 };

@@ -3,23 +3,25 @@ import FormComponent, { TextField, SelectField, RadioField } from '../common/for
 import { IDepart, IReport } from '../../models';
 import api from '../../api/index.js';
 import { IS_REQUIRED } from '../../utils/validator';
+import { useDeparts } from '../../hooks/useDeparts';
 
 interface UserProps {
   report?: IReport;
   onSubmit: any;
 }
 const ReportEditForm = ({ report = null, onSubmit }: UserProps) => {
-  const [data, setData] = useState({
+  const [data] = useState({
     name: report ? report.name : '',
     depart_id: report ? report.depart_id : '',
     is_public: report ? String(report.is_public) : 'true',
   });
 
-  const [departs, setDeparts] = useState<IDepart[]>([]);
+  const { departs } = useDeparts();
+  // const [departs, setDeparts] = useState<IDepart[]>([]);
 
-  useEffect(() => {
-    api.departs.fetchAll().then((data) => setDeparts(data));
-  }, []);
+  // useEffect(() => {
+  //   api.departs.fetchAll().then((data) => setDeparts(data));
+  // }, []);
 
   const validatorConfig = {
     name: {
