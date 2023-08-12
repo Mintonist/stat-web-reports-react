@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "111",
+    "name": "Джон Дориан",
+    "email": "Jony7351@tw.com",
+    "login": "John_D",
+    "password": "John_D",
+    "role": "admin",
+    "create_ts": 55,
+    "login_ts": 0
+  },
+  {
+    "_id": "222",
+    "name": "Кокс",
+    "email": "white4571@twipet.com",
+    "login": "Cox_P",
+    "password": "Cox_P",
+    "role": "viewer",
+    "create_ts": 0,
+    "login_ts": 0
+  },
+  {
+    "_id": "333",
+    "name": "Боб Келсо",
+    "email": "bob007@tw.com",
+    "login": "Kelso_B",
+    "password": "Kelso_B",
+    "role": "editor",
+    "create_ts": 0,
+    "login_ts": 0
+  }
+]

@@ -1,0 +1,4 @@
+{
+  "port": 8081,
+  "mongoUrl": "mongodb+srv://mintonist:wkOMCKzC6WqDgyug@cluster0.ktewaro.mongodb.net/stat?retryWrites=true&w=majority"
+}
