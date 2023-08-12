@@ -23,6 +23,20 @@ class TokenService {
     }
   }
 
+  validateAccessToken(accessToken) {
+    try {
+      const data = jwt.verify(accessToken, config.get('accessSecret'));
+      // const dbToken = await Token.findOne({ accessToken });
+
+      // if (!data || !dbToken || data.id !== dbToken?.user?.toString()) {
+      //   return null;
+      // }
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async save(userId, refreshToken) {
     const data = await Token.findOne({ user: userId });
     if (data) {
@@ -37,7 +51,7 @@ class TokenService {
   // async findRefreshToken(refreshToken) {
   //   try {
   //     const data = await Token.findOne({ refreshToken });
-  //     console.log(data);
+
   //     return data;
   //   } catch (e) {
   //     return null;

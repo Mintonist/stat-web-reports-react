@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-router.use('/auth', require('./auth'));
-router.use('/user', require('./user'));
-router.use('/report', require('./report'));
-router.use('/depart', require('./depart'));
+router.use('/auth', require('./auth.routes'));
+router.use('/user', require('./user.routes'));
+router.use('/report', require('./report.routes'));
+router.use('/depart', require('./depart.routes'));
 
 module.exports = router;
