@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { IDepart } from '../models';
-import api from '../api/index.js';
+//import api from '../api/index.js';
 import ItemsList from '../components/ui/itemsList';
-import userStore from '../store/userStore';
+//import userStore from '../store/userMobx';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import DepartEditForm from '../components/ui/departEditForm';
-import { useDeparts } from '../hooks/useDeparts';
+//import { useDeparts } from '../hooks/useDeparts';
+import { useDispatch, useSelector } from 'react-redux';
+import { isCurrentUserAdmin } from '../store/users';
+import { getDeparts, createDepart, deleteDepart, updateDepart } from '../store/departs';
 
 enum ModalType {
   NONE,
@@ -16,10 +19,13 @@ enum ModalType {
 }
 
 const Departs = () => {
+  const dispatch: any = useDispatch();
   const history = useHistory();
+  const isAdmin = useSelector(isCurrentUserAdmin());
 
-  const { departs, addDepart, deleteDepart, updateDepart } = useDeparts();
-  // const [departs, setDeparts] = useState<IDepart[]>(null);
+  //const { departs, addDepart, deleteDepart, updateDepart } = useDeparts();
+  const departs = useSelector(getDeparts());
+
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refDepartToEdit = useRef<IDepart>(null);
 
@@ -43,7 +49,7 @@ const Departs = () => {
           <p className="m-0">Отедлы помогают группировать отчёты для удобства поиска и рабоыт с ними. </p>
           <p>Здесь Вы можете создавать/удалять/редактировать отделы</p>
         </div>
-        {userStore.isAdmin() && (
+        {isAdmin && (
           <>
             <button
               type="button"
@@ -64,7 +70,7 @@ const Departs = () => {
                 <DepartEditForm
                   depart={null}
                   onSubmit={(data) => {
-                    addDepart({ ...data });
+                    dispatch(createDepart({ ...data }));
                     // api.departs.add({ ...data });
                     // update();
                     setModalState(ModalType.NONE);
@@ -86,7 +92,7 @@ const Departs = () => {
               history.push(`/depart/${dep._id}`);
             }}
             onItemEdit={
-              userStore.isAdmin()
+              isAdmin
                 ? (item) => {
                     refDepartToEdit.current = item;
                     setModalState(ModalType.EDIT);
@@ -94,9 +100,9 @@ const Departs = () => {
                 : null
             }
             onItemRemove={
-              userStore.isAdmin()
+              isAdmin
                 ? (item) => {
-                    deleteDepart(item._id);
+                    dispatch(deleteDepart(item._id));
                     // api.departs.remove(item._id);
                     //update();
                   }
@@ -115,7 +121,7 @@ const Departs = () => {
           <DepartEditForm
             depart={refDepartToEdit.current}
             onSubmit={(data) => {
-              updateDepart(refDepartToEdit.current._id, { ...data });
+              dispatch(updateDepart(refDepartToEdit.current._id, { ...data }));
               // api.departs.update(refDepartToEdit.current._id, { ...data });
               refDepartToEdit.current = null;
               setModalState(ModalType.NONE);

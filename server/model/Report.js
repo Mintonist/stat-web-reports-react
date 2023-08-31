@@ -3,7 +3,7 @@ const { Schema, model } = require('mongoose');
 const schema = new Schema(
   {
     name: { type: String, required: true },
-    depart_id: { type: Schema.Types.ObjectId, ref: 'Depart', required: true },
+    depart_id: { type: Schema.Types.ObjectId, ref: 'Depart', required: false },
     is_public: Boolean,
     rate: Number,
     create_user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import FormComponent, { TextField, SelectField, RadioField } from '../common/form';
 import { IDepart, IReport } from '../../models';
-import api from '../../api/index.js';
 import { IS_REQUIRED } from '../../utils/validator';
-import { useDeparts } from '../../hooks/useDeparts';
+import { getDeparts } from '../../store/departs';
+import { useSelector } from 'react-redux';
+//import { useDeparts } from '../../hooks/useDeparts';
 
 interface UserProps {
   report?: IReport;
@@ -16,12 +17,8 @@ const ReportEditForm = ({ report = null, onSubmit }: UserProps) => {
     is_public: report ? String(report.is_public) : 'true',
   });
 
-  const { departs } = useDeparts();
-  // const [departs, setDeparts] = useState<IDepart[]>([]);
-
-  // useEffect(() => {
-  //   api.departs.fetchAll().then((data) => setDeparts(data));
-  // }, []);
+  //const { departs } = useDeparts();
+  const departs = useSelector(getDeparts());
 
   const validatorConfig = {
     name: {

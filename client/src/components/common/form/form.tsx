@@ -6,12 +6,20 @@ interface Props {
   validatorConfig: any;
   onSubmit: any;
   defaultData?: object;
+  defaultErrors?: object;
   autoClear?: boolean;
 }
 
-const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null, autoClear = false }: Props) => {
-  const [data, setData] = useState(defaultData || {});
-  const [errors, setErrors] = useState({});
+const FormComponent = ({
+  children,
+  validatorConfig,
+  onSubmit,
+  defaultData = {},
+  defaultErrors = {},
+  autoClear = false,
+}: Props) => {
+  const [data, setData] = useState(defaultData);
+  const [errors, setErrors] = useState(defaultErrors);
 
   // до первого нажатия submit button - ошибки не показываем
   let submitAmount = useRef(0);
@@ -50,7 +58,7 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
       // true - если нет ошибок
       return Object.keys(err).length === 0;
     },
-    [validatorConfig, setErrors, isValid]
+    [validatorConfig, setErrors]
   );
 
   //   const validate = (data) => {
@@ -69,14 +77,14 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
     if (validate(data)) {
       submitAmount.current = 0;
       if (autoClear) {
-        setData(defaultData || {});
+        setData(defaultData);
       }
       onSubmit(data);
     }
   };
 
   const handleKeyDown = useCallback((e) => {
-    // если есть ошибки валидации - не вызываем верхний уровень
+    // переход по компонентам фомы по нажатию Enter
     if (e.keyCode == 13) {
       e.preventDefault();
       const form = e.target.form;
@@ -86,6 +94,7 @@ const FormComponent = ({ children, validatorConfig, onSubmit, defaultData = null
   }, []);
 
   const clonedElements = React.Children.map(children, (child) => {
+    if (child == null) return null;
     const type = typeof child.type;
     let config = {};
     // пришёл элемент формы

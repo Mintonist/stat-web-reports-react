@@ -37,9 +37,8 @@ router.delete('/:reportId', auth, user, async (req, res) => {
       await reportToDelete.remove();
     } else {
       res.status(401).json({ error: { message: 'NOT_ALOWED', code: 401 } });
+      return;
     }
-
-    await reportToDelete.remove();
 
     res.status(200).send(reportToDelete);
   } catch (e) {

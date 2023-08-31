@@ -1,7 +1,7 @@
 import { IUser } from '../models';
 import { makeAutoObservable } from 'mobx';
 
-class UserStore {
+class UserMobx {
   user: IUser = null;
 
   constructor() {
@@ -24,5 +24,5 @@ class UserStore {
     return this.user && this.user.role == 'admin';
   }
 }
-const user = new UserStore();
+const user = new UserMobx();
 export default user;

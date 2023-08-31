@@ -16,9 +16,9 @@ const authService = {
     });
     return data;
   },
-  login: async ({ email, password }) => {
+  login: async ({ login, password }) => {
     const { data } = await httpAuth.post(CONFIG.IS_FIREBASE ? 'accounts:signInWithPassword' : 'signInWithPassword', {
-      email,
+      login,
       password,
       returnSecureToken: true,
     });

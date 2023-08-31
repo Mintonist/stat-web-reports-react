@@ -4,6 +4,8 @@ const tokenService = require('../services/token.service');
 module.exports = function (req, res, next) {
   if (req.method === 'OPTIONS') return next();
 
+  console.log('user.middleware()', req.user);
+
   try {
     const userId = req.user.id;
     const user = User.findById(userId);

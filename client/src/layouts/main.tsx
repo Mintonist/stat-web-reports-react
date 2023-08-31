@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IDepart, IReport } from '../models';
-import api from '../api/index.js';
 import ItemsList from '../components/ui/itemsList';
-import userStore from '../store/userStore';
+//import userStore from '../store/userMobx';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { BadgeList } from '../components/ui/badges';
 import { IBadge } from '../components/ui/badges/badge';
@@ -10,8 +9,12 @@ import { useHistory } from 'react-router-dom';
 import { reportSortConfig } from '../app';
 import ModalDialog from '../components/common/ModalDialog';
 import ReportEditForm from '../components/ui/reportEditForm';
-import { useReports } from '../hooks/useReports';
-import { useDeparts } from '../hooks/useDeparts';
+//import { useReports } from '../hooks/useReports';
+//import { useDeparts } from '../hooks/useDeparts';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCurrentUserInfo, isCurrentUserAdmin } from '../store/users';
+import { getDeparts } from '../store/departs';
+import { filterReports, updateReport, deleteReport } from '../store/reports';
 
 enum ModalType {
   NONE,
@@ -19,14 +22,17 @@ enum ModalType {
 }
 
 const Main = () => {
+  const dispatch: any = useDispatch();
   const history = useHistory();
 
-  const { filterReports, updateReport, deleteReport } = useReports();
-  const reports = filterReports(userStore.user._id, true, '0');
-  // const [reports, setReports] = useState<IReport[]>(null);
+  //const { filterReports, updateReport, deleteReport } = useReports();
+  const loggedUser = useSelector(getCurrentUserInfo());
+  const isAdmin = useSelector(isCurrentUserAdmin());
 
-  const { departs, getDepart, updateDepart } = useDeparts();
-  // const [departs, setDeparts] = useState<IDepart[]>(null);
+  const reports = useSelector(filterReports(loggedUser._id, true, '0'));
+
+  //const { departs, getDepart, updateDepart } = useDeparts();
+  const departs = useSelector(getDeparts());
 
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refReportToEdit = useRef<IReport>(null);
@@ -55,8 +61,7 @@ const Main = () => {
       const dep = departs.filter((d) => d._id == report.depart_id);
       if (dep && dep.length > 0) res.push({ _id: dep[0]._id, title: dep[0].code, color: dep[0].color });
     }
-    if (!report.is_public && report.create_user_id == userStore.user._id)
-      res.push({ _id: '0', icon: '/personIcon.svg' });
+    if (!report.is_public && report.create_user_id == loggedUser._id) res.push({ _id: '0', icon: '/personIcon.svg' });
     return res;
   };
 
@@ -102,7 +107,7 @@ const Main = () => {
               history.push(`/report/${rep._id}`);
             }}
             onItemEdit={
-              userStore.isAdmin()
+              isAdmin
                 ? (data) => {
                     refReportToEdit.current = data;
                     setModalState(ModalType.REPORT);
@@ -110,9 +115,9 @@ const Main = () => {
                 : null
             }
             onItemRemove={
-              userStore.isAdmin()
+              isAdmin
                 ? (item) => {
-                    deleteReport(item._id);
+                    dispatch(deleteReport(item._id));
                     // api.reports.remove(item._id);
                     // update();
                   }
@@ -131,7 +136,7 @@ const Main = () => {
           <ReportEditForm
             report={refReportToEdit.current}
             onSubmit={(data) => {
-              updateReport(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
+              dispatch(updateReport(refReportToEdit.current._id, { ...refReportToEdit.current, ...data }));
               //api.reports.update(refReportToEdit.current._id, { ...refReportToEdit.current, ...data });
               setModalState(ModalType.NONE);
               //update();

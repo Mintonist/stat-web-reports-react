@@ -1,16 +1,16 @@
 [
   {
-    "_id": "111",
-    "name": "Джон Дориан",
-    "email": "Jony7351@tw.com",
-    "login": "John_D",
-    "password": "John_D",
+    "_id": "64e2264e0d3f2b5b5dd9e001",
+    "name": "Администартор",
+    "email": "admin@admin.com",
+    "login": "admin",
+    "password": "admin",
     "role": "admin",
     "create_ts": 55,
     "login_ts": 0
   },
   {
-    "_id": "222",
+    "_id": "64e2264e0d3f2b5b5dd9e002",
     "name": "Кокс",
     "email": "white4571@twipet.com",
     "login": "Cox_P",
@@ -20,7 +20,7 @@
     "login_ts": 0
   },
   {
-    "_id": "333",
+    "_id": "64e2264e0d3f2b5b5dd9e003",
     "name": "Боб Келсо",
     "email": "bob007@tw.com",
     "login": "Kelso_B",

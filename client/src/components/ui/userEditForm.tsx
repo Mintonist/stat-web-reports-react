@@ -16,7 +16,7 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
     name: user ? user.name : '',
     email: user ? user.email : '',
     login: user ? user.login : '',
-    password: user ? user.password : '',
+    password: '', //user ? user.password : '',
     role: user ? user.role : '',
   });
   // const [errors, setErrors] = useState({});

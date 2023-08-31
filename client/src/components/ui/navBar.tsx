@@ -1,8 +1,13 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
-import userStore from '../../store/userStore';
+//import userStore from '../../store/userMobx';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCurrentUserInfo, logout, isCurrentUserAdmin } from '../../store/users';
 
 const NavBar = () => {
+  const loggedUser = useSelector(getCurrentUserInfo());
+  const isAdmin = useSelector(isCurrentUserAdmin());
+  const dispatch: any = useDispatch();
   const pages = [
     { id: 1, label: 'Отделы', link: '/departs' },
     // { id: 2, label: 'Login', link: '/' },
@@ -11,7 +16,8 @@ const NavBar = () => {
 
   const handleExit = () => {
     localStorage.removeItem('user');
-    userStore.setUser(null);
+    //userStore.setUser(null);
+    dispatch(logout());
     window.location.replace('/login');
   };
 
@@ -24,7 +30,7 @@ const NavBar = () => {
             Stat Platform
           </NavLink>
 
-          {userStore.isAdmin() && (
+          {isAdmin && (
             <ul className="navbar-nav me-auto flex-row">
               {pages.map((page) => (
                 <li key={page.id} className="nav-item">
@@ -49,7 +55,7 @@ const NavBar = () => {
           )}
 
           <div className="d-flex">
-            {userStore.isAdmin() && (
+            {isAdmin && (
               <NavLink className="nav-link" aria-current="page" to="/report">
                 <button type="button" className="btn btn-secondary">
                   Создать отчёт
@@ -64,7 +70,7 @@ const NavBar = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                {userStore.user.login}
+                {loggedUser.login}
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li>

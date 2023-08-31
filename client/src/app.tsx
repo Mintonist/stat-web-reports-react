@@ -11,14 +11,17 @@ import Profile from './layouts/profile';
 import Report from './layouts/report';
 import Users from './layouts/usersList';
 import { IUser } from './models';
-import userStore from './store/userStore';
+//import userStore from './store/userMobx';
 import { ISortConfig } from './utils/sorter';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { UsersProvider } from './hooks/useUsers';
-import { DepartsProvider } from './hooks/useDeparts';
-import { ReportsProvider } from './hooks/useReports';
+//import { UsersProvider } from './hooks/useUsers';
+//import { DepartsProvider } from './hooks/useDeparts';
+//import { ReportsProvider } from './hooks/useReports';
+import { useSelector } from 'react-redux';
+import { getIsLoggedIn } from './store/users';
+import AppLoader from './components/ui/hoc/appLoader';
 
 export const reportSortConfig: ISortConfig[] = [
   { label: 'По алфавиту', asc: true, sortProperty: 'name' },
@@ -27,18 +30,16 @@ export const reportSortConfig: ISortConfig[] = [
 ];
 
 const App = () => {
-  const updateUserFromLocalStorage = () => {
-    // излекаем данные пользователя
-    const str = localStorage.getItem('user');
-    const user: IUser = str ? JSON.parse(str) : null;
-    userStore.setUser(user);
-  };
+  // const updateUserFromLocalStorage = () => {
+  //   // излекаем данные пользователя
+  //   const str = localStorage.getItem('user');
+  //   const user: IUser = str ? JSON.parse(str) : null;
+  //   userStore.setUser(user);
+  // };
 
-  // useEffect(() => {
-  //   updateUserFromLocalStorage();
-  // }, []);
+  // updateUserFromLocalStorage();
 
-  updateUserFromLocalStorage();
+  const isLoggedIn = useSelector(getIsLoggedIn());
 
   // обёртка для Route
   const NavRoute = ({ exact, path, component: Component }) => (
@@ -59,38 +60,37 @@ const App = () => {
     />
   );
 
-  console.log('userStore.user', userStore.user);
+  //console.log('userStore.user', userStore.user);
   return (
     <>
-      {!userStore.user && (
+      {/* <AppLoader> */}
+      {!isLoggedIn && (
         <Switch>
           <Route path="/" component={Login} />
           <Redirect to="/" />
         </Switch>
       )}
-      {userStore.user && (
-        <Switch>
-          {/* <Route path="/login" component={Login} />
-        <Route path="/users/:userId?/edit" component={Users} />
-        <Route path="/users/:userId?" component={Users} />
-        <Route path="/users/:userId" component={UserInfo} /> */}
-          <UsersProvider>
-            <DepartsProvider>
-              <ReportsProvider>
-                <Route exact path="/report/:id?" component={Report} />
-                <NavRoute exact path="/users" component={Users} />
-                <NavRoute exact path="/profile/:id?" component={Profile} />
-                <NavRoute exact path="/departs" component={Departs} />
-                <NavRoute exact path="/depart/:id?" component={Depart} />
-                <NavRoute exact path="/main" component={Main} />
-                <NavRoute exact path="/404" component={NotFound} />
-                <Redirect exact from="/" to="/main" />
-              </ReportsProvider>
-            </DepartsProvider>
-          </UsersProvider>
+      {isLoggedIn && (
+        <AppLoader>
+          <Switch>
+            {/* <UsersProvider> */}
+            {/* <DepartsProvider> */}
+            {/* <ReportsProvider> */}
+            <Route exact path="/report/:id?" component={Report} />
+            <NavRoute exact path="/users" component={Users} />
+            <NavRoute exact path="/profile/:id?" component={Profile} />
+            <NavRoute exact path="/departs" component={Departs} />
+            <NavRoute exact path="/depart/:id?" component={Depart} />
+            <NavRoute exact path="/main" component={Main} />
+            <NavRoute exact path="/404" component={NotFound} />
+            <Redirect exact from="/" to="/main" />
+            {/* </ReportsProvider> */}
+            {/* </DepartsProvider> */}
+            {/* </UsersProvider> */}
 
-          <Redirect to="/404" />
-        </Switch>
+            <Redirect to="/404" />
+          </Switch>
+        </AppLoader>
       )}
       {/* <button
         className="btn"
@@ -103,6 +103,7 @@ const App = () => {
       </button> */}
 
       <ToastContainer autoClose={false} closeButton={true} position={'top-center'} />
+      {/* </AppLoader> */}
     </>
   );
 };

@@ -2,12 +2,14 @@ import React, { useRef, useState } from 'react';
 import LoadingAnim from '../components/ui/loadingAnim';
 import { IUser } from '../models';
 import ItemsList from '../components/ui/itemsList';
-import userStore from '../store/userStore';
+//import userStore from '../store/userMobx';
 import { IFilterConfig } from '../utils/sorter';
 import { useHistory } from 'react-router-dom';
 import ModalDialog from '../components/common/ModalDialog';
 import UserEditForm from '../components/ui/userEditForm';
-import { useUsers } from '../hooks/useUsers';
+//import { useUsers } from '../hooks/useUsers';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCurrentUserInfo, getUsers, updateUser, createUser, deleteUser, isCurrentUserAdmin } from '../store/users';
 
 const filterConfig: IFilterConfig = {
   label: 'Роль',
@@ -28,9 +30,13 @@ enum ModalType {
 }
 
 const Users = () => {
+  const dispatch: any = useDispatch();
   const history = useHistory();
-  const { users, addUser, updateUser, deleteUser } = useUsers();
-  // const [users, setUsers] = useState<IUser[]>(null);
+  //const { users, addUser, updateUser, deleteUser } = useUsers();
+  const users = useSelector(getUsers());
+  const loggedUser = useSelector(getCurrentUserInfo());
+  const isAdmin = useSelector(isCurrentUserAdmin());
+
   const [modalState, setModalState] = useState<ModalType>(ModalType.NONE);
   const refUserToEdit = useRef<IUser>(null);
 
@@ -68,7 +74,7 @@ const Users = () => {
             <strong>Viewer</strong>: только просмотр общедоступных отчётов.
           </p>
         </div>
-        {userStore.isAdmin() && (
+        {isAdmin && (
           <>
             <button
               type="button"
@@ -89,7 +95,7 @@ const Users = () => {
                 <UserEditForm
                   user={null}
                   onSubmit={(data) => {
-                    addUser({ ...data });
+                    dispatch(createUser({ ...data }));
                     //api.users.add({ ...data });
                     //update();
                     setModalState(ModalType.NONE);
@@ -113,7 +119,7 @@ const Users = () => {
               history.push(`/profile/${u._id}`);
             }}
             onItemEdit={
-              userStore.isAdmin()
+              isAdmin
                 ? (item) => {
                     refUserToEdit.current = item;
                     setModalState(ModalType.EDIT);
@@ -121,9 +127,9 @@ const Users = () => {
                 : null
             }
             onItemRemove={
-              userStore.isAdmin()
+              isAdmin
                 ? (item) => {
-                    deleteUser(item._id);
+                    dispatch(deleteUser(item._id));
                     //api.users.remove(item._id);
                     //update();
                   }
@@ -144,7 +150,7 @@ const Users = () => {
             onSubmit={(data) => {
               //setUser({ ...user, ...data });
               console.log(data);
-              updateUser(refUserToEdit.current._id, { ...data });
+              dispatch(updateUser(refUserToEdit.current._id, { ...data }));
               // api.users.update(refUserToEdit.current._id, { ...data });
               refUserToEdit.current = null;
               setModalState(ModalType.NONE);

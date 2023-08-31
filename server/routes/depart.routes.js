@@ -1,6 +1,7 @@
 const express = require('express');
 const Depart = require('../model/Depart');
 const auth = require('../middleware/auth.middleware');
+const user = require('../middleware/user.middleware');
 const router = express.Router({ mergeParams: true });
 
 // /api/depart/
@@ -22,19 +23,21 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-router.delete('/:departId', auth, async (req, res) => {
+router.delete('/:departId', auth, user, async (req, res) => {
   try {
     const { departId } = req.params;
+    console.log('/api/depart/delete: id=' + departId);
     const departToDelete = await Depart.findById(departId);
 
+    //console.log(departToDelete);
+    console.log(req.userInfo);
     // //todo проверка роли
-    if (departToDelete && req.userInfo.role == 'admin') {
-      await reportToDelete.remove();
-    } else {
-      res.status(401).json({ error: { message: 'NOT_ALOWED', code: 401 } });
-    }
-
-    await departToDelete.remove();
+    // if (departToDelete && req.userInfo.role == 'admin') {
+    //   await departToDelete.remove();
+    // } else {
+    //   res.status(401).json({ error: { message: 'NOT_ALOWED', code: 401 } });
+    //   return;
+    // }
 
     res.status(200).send(departToDelete);
   } catch (e) {

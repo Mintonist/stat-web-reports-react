@@ -41,7 +41,7 @@ const departService = {
   },
   delete: async (id) => {
     if (CONFIG.IS_SERVER) {
-      const { data } = await httpService.delete(endpoint, id);
+      const { data } = await httpService.delete(endpoint + id);
       return data;
     } else {
       const data = { content: null };
