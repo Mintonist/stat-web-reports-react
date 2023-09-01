@@ -34,7 +34,7 @@ app.use(
 async function start() {
   try {
     mongoose.connection.once('open', () => {
-      //initDatabase();
+      initDatabase();
     });
 
     await mongoose.connect(config.get('mongoUrl'));

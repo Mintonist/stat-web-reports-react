@@ -16,9 +16,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
   try {
+    console.log('Depart.create()', req.body);
     const newDepart = await Depart.create({ ...req.body, create_user_id: req.userId, change_user_id: req.userId });
     res.status(201).send(newDepart);
   } catch (e) {
+    console.log(e);
     res.status(500).json({ message: 'Ошибка работы с БД' });
   }
 });

@@ -30,7 +30,7 @@ const departService = {
   },
   add: async (content) => {
     if (CONFIG.IS_SERVER) {
-      const { data } = await httpService.put(endpoint + content._id, content);
+      const { data } = await httpService.post(endpoint, content);
       return data;
     } else {
       const data = { content: null };

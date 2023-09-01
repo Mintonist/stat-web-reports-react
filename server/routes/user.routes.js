@@ -37,6 +37,25 @@ router.patch('/:userId', auth, user, async (req, res) => {
   }
 });
 
+router.post('/', auth, async (req, res) => {
+  try {
+    console.log('User.create()', req.body);
+
+    if (req.body.password != null && req.body.password.length > 0) {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    } else {
+      // пустой пароль - в БД не меняем
+      delete req.body.password;
+    }
+
+    const newUser = await User.create(req.body);
+    res.status(201).send(newUser);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Ошибка работы с БД' });
+  }
+});
+
 router.get('/', [
   auth,
   async (req, res) => {
