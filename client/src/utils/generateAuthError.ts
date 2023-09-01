@@ -4,7 +4,12 @@ export function generateAuthError(code) {
       return 'Неверный логин/пароль';
     case 'EMAIL_EXISTS':
       return 'email занят';
+    case 'LOGIN_NOT_FOUND':
+      return 'Логин не найден';
+    case 'INVALID_DATA':
+      return 'Ошибка в данных формы';
+
     default:
-      return 'Ошибка. Попробуйте позже';
+      return code;
   }
 }

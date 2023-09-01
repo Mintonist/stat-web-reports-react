@@ -18,7 +18,7 @@ const NavBar = () => {
     localStorage.removeItem('user');
     //userStore.setUser(null);
     dispatch(logout());
-    window.location.replace('/login');
+    //window.location.replace('/login');
   };
 
   return (

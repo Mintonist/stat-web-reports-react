@@ -18,14 +18,14 @@ router.post('/signUp', [
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: { message: 'INVALID_DATA', code: 400, errors: errors.array() } });
+      return res.status(400).json({ message: 'INVALID_DATA' });
     }
 
     try {
       const { login, password } = req.body;
       const data = await User.findOne({ login });
       if (data != null) {
-        return res.status(400).json({ error: { message: 'LOGIN_EXISTS', code: 400 } });
+        return res.status(400).json({ message: 'LOGIN_EXISTS' });
       }
 
       const hashPass = await bcrypt.hash(password, 10);
@@ -46,19 +46,19 @@ router.post('/signInWithPassword', [
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: { message: 'INVALID_DATA', code: 400, errors: errors.array() } });
+      return res.status(400).json({ message: 'INVALID_DATA' });
     }
 
     try {
       const { login, password } = req.body;
       const existingUser = await User.findOne({ login });
       if (existingUser == null) {
-        return res.status(400).json({ error: { message: 'LOGIN_NOT_FOUND', code: 400 } });
+        return res.status(400).json({ message: 'LOGIN_NOT_FOUND' });
       }
 
       const isPassCorrect = await bcrypt.compare(password, existingUser.password);
       if (!isPassCorrect) {
-        return res.status(400).json({ error: { message: 'INVALID_PASSWORD', code: 400 } });
+        return res.status(400).json({ message: 'INVALID_PASSWORD' });
       }
 
       const tokens = tokenService.generate({ id: existingUser._id });
@@ -78,7 +78,7 @@ router.post('/token', async (req, res) => {
     const dbToken = await tokenService.validateRefreshToken(refreshToken);
 
     if (!dbToken) {
-      return res.status(401).json({ error: { message: 'Unauthorized', code: 401 } });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const tokens = tokenService.generate({ id: dbToken.user });

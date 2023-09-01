@@ -102,7 +102,7 @@ const App = () => {
         Break the world
       </button> */}
 
-      <ToastContainer autoClose={false} closeButton={true} position={'top-center'} />
+      <ToastContainer autoClose={5000} closeButton={true} position={'top-center'} />
       {/* </AppLoader> */}
     </>
   );

@@ -47,13 +47,13 @@ const UserEditForm = ({ user = null, onSubmit }: UserProps) => {
       [IS_LOGIN]: { message: 'Логин может содержать недопустимые символы' },
       [MIN_MAX_LEGTH]: { min: 5, message: 'Слишком короткий логин' },
     },
-    password: {
-      [IS_REQUIRED]: { message: 'Пароль пустой' },
-      // [MIN_MAX_LEGTH]: { min: 8, max: 16, message: 'Пароль должен быть от 8 до 16 символов' },
-      //  [HAS_SPECIAL_CHARACTER]: { message: 'Пароль не содержит спец.символ' },
-      // [HAS_DIGIT]: { message: 'Пароль не содержит цифру' },
-      // [HAS_CAPITAL_SYMBOL]: { message: 'Пароль не содержит заглавной буквы' },
-    },
+    // password: {
+    //   //[IS_REQUIRED]: { message: 'Пароль пустой' },
+    //   // [MIN_MAX_LEGTH]: { min: 8, max: 16, message: 'Пароль должен быть от 8 до 16 символов' },
+    //   //  [HAS_SPECIAL_CHARACTER]: { message: 'Пароль не содержит спец.символ' },
+    //   // [HAS_DIGIT]: { message: 'Пароль не содержит цифру' },
+    //   // [HAS_CAPITAL_SYMBOL]: { message: 'Пароль не содержит заглавной буквы' },
+    // },
     role: { [IS_REQUIRED]: { message: 'Нужно выбрать роль' } },
   };
 

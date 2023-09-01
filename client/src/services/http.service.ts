@@ -82,10 +82,10 @@ myAxios.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (err.response && err.response.status >= 500 && err.response.status < 600) {
+    if (err.response && err.response.status >= 400 && err.response.status < 600) {
       logService.log(err);
-      console.log('Unexpected error: ' + err.response.status);
-      toast.error('Ошибка сервера. Попробуйте позже.');
+      console.log('Unexpected error: ' + err.response);
+      toast.error('Ошибка сервера [' + err.response.status + '].\n' + err.response.data.message);
     }
     return Promise.reject(err);
   }

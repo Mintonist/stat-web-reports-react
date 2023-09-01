@@ -158,13 +158,14 @@ export const login =
         //history.push('/users');
       }
     } catch (error) {
-      const { code, message } = error.response.data.error;
-      if (code === 400) {
-        const errorMessage = generateAuthError(message);
-        dispatch(authRequestFailed(errorMessage));
-      } else {
-        dispatch(authRequestFailed(error.message));
-      }
+      dispatch(authRequestFailed(error.message));
+      // const { code, message } = error.response.data.error;
+      // if (code === 400) {
+      //   const errorMessage = generateAuthError(message);
+      //   dispatch(authRequestFailed(errorMessage));
+      // } else {
+      //   dispatch(authRequestFailed(error.message));
+      // }
     }
   };
 

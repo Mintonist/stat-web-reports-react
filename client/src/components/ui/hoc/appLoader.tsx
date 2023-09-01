@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadDepartsList } from '../../../store/departs';
-import { loadReportsList } from '../../../store/reports';
+import { getDepartsLoadingStatus, loadDepartsList } from '../../../store/departs';
+import { getReportsLoadingStatus, loadReportsList } from '../../../store/reports';
 import { getIsLoggedIn, getUsersLoadingStatus, loadUsersList } from '../../../store/users';
+import LoadingAnim from '../loadingAnim';
 
 const AppLoader = ({ children }) => {
   const isLoggedIn = useSelector(getIsLoggedIn());
   const isUsersLoading = useSelector(getUsersLoadingStatus());
+  const isDepartsLoading = useSelector(getDepartsLoadingStatus());
+  const isReportLoading = useSelector(getReportsLoadingStatus());
   const dispatch: any = useDispatch();
 
   //console.log('AppLoader render');
@@ -23,8 +26,8 @@ const AppLoader = ({ children }) => {
     }
   }, [isLoggedIn]);
 
-  if (isUsersLoading) {
-    return 'Loading users....';
+  if (isUsersLoading || isDepartsLoading || isReportLoading) {
+    return <LoadingAnim />;
   }
   return children;
 };
